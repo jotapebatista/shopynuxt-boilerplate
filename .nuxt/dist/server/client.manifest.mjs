@@ -1,1 +1,0 @@
-export { default } from "file:///Users/joaobatista/Documents/GitRepos/shopynuxt-starter-boilerplate/node_modules/@nuxt/vite-builder/dist/runtime/client.manifest.mjs"
