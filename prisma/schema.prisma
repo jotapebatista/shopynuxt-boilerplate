@@ -1,0 +1,219 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id                String    @id @default(cuid())
+    email             String    @unique
+    password          String
+    firstName         String
+    lastName          String
+    phone             String?
+    role              Role      @default(USER)
+    isActive          Boolean   @default(true)
+    resetToken        String?
+    resetTokenExpires DateTime?
+    addresses         Address[]
+    orders            Order[]
+    wishlist          Wishlist?
+    cart              Cart?
+    createdAt         DateTime  @default(now())
+    updatedAt         DateTime  @updatedAt
+}
+
+model Category {
+    id          String    @id @default(cuid())
+    name        String    @unique
+    slug        String    @unique
+    description String?
+    products    Product[]
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+}
+
+model Product {
+    id             String         @id @default(cuid())
+    name           String
+    slug           String         @unique
+    description    String
+    price          Float
+    stock          Int
+    images         String[]
+    specifications Json?
+    categoryId     String
+    category       Category       @relation(fields: [categoryId], references: [id])
+    orderItems     OrderItem[]
+    wishlist       WishlistItem[]
+    cartItems      CartItem[]
+    createdAt      DateTime       @default(now())
+    updatedAt      DateTime       @updatedAt
+}
+
+model Cart {
+    id        String     @id @default(cuid())
+    user      User       @relation(fields: [userId], references: [id])
+    userId    String     @unique
+    items     CartItem[]
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+    id        String   @id @default(cuid())
+    cartId    String
+    cart      Cart     @relation(fields: [cartId], references: [id])
+    productId String
+    product   Product  @relation(fields: [productId], references: [id])
+    quantity  Int
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Order {
+    id                String      @id @default(cuid())
+    userId            String
+    user              User        @relation(fields: [userId], references: [id])
+    total             Float
+    status            OrderStatus @default(PENDING)
+    paymentMethod     String
+    shippingAddressId String
+    shippingAddress   Address     @relation(fields: [shippingAddressId], references: [id])
+    items             OrderItem[]
+    createdAt         DateTime    @default(now())
+    updatedAt         DateTime    @updatedAt
+}
+
+model OrderItem {
+    id        String   @id @default(cuid())
+    orderId   String
+    order     Order    @relation(fields: [orderId], references: [id])
+    productId String
+    product   Product  @relation(fields: [productId], references: [id])
+    quantity  Int
+    price     Float
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Address {
+    id        String   @id @default(cuid())
+    userId    String
+    user      User     @relation(fields: [userId], references: [id])
+    firstName String
+    lastName  String
+    street    String
+    city      String
+    state     String
+    zipCode   String
+    country   String
+    phone     String?
+    isDefault Boolean  @default(false)
+    orders    Order[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Wishlist {
+    id        String         @id @default(cuid())
+    userId    String
+    user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+    items     WishlistItem[]
+    createdAt DateTime       @default(now())
+    updatedAt DateTime       @updatedAt
+
+    @@unique([userId])
+}
+
+model WishlistItem {
+    id         String   @id @default(cuid())
+    wishlistId String
+    wishlist   Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+    productId  String
+    product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    @@unique([wishlistId, productId])
+}
+
+model StoreSettings {
+    id        String   @id @default(cuid())
+    key       String   @unique
+    value     String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+enum Role {
+    USER
+    ADMIN
+}
+
+enum OrderStatus {
+    PENDING
+    PROCESSING
+    SHIPPED
+    DELIVERED
+    CANCELLED
+}
+
+// Content Management Models
+model Page {
+    id          String    @id @default(cuid())
+    slug        String    @unique
+    title       String
+    description String?
+    content     Json // Stores the page content in a structured format
+    isPublished Boolean   @default(false)
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+    sections    Section[]
+    seo         SEO?
+}
+
+model Section {
+    id        String   @id @default(cuid())
+    type      String // e.g., "hero", "about", "features", etc.
+    title     String?
+    content   Json // Stores section-specific content
+    order     Int // For controlling section order
+    isActive  Boolean  @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    page      Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+    pageId    String
+    media     Media[]
+}
+
+model Media {
+    id          String   @id @default(cuid())
+    type        String // "image", "video", etc.
+    url         String
+    alt         String?
+    title       String?
+    description String?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    section     Section? @relation(fields: [sectionId], references: [id], onDelete: SetNull)
+    sectionId   String?
+}
+
+model SEO {
+    id          String   @id @default(cuid())
+    title       String?
+    description String?
+    keywords    String?
+    ogImage     String?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    page        Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+    pageId      String   @unique
+}

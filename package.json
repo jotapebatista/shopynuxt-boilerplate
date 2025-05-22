@@ -1,0 +1,51 @@
+{
+  "name": "shopynuxt-starter-boilerplate",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev --host",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "prisma:seed": "node prisma/seed.cjs"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.cjs"
+  },
+  "dependencies": {
+    "@headlessui/vue": "^1.7.23",
+    "@heroicons/vue": "^2.2.0",
+    "@nuxtjs/tailwindcss": "^6.11.4",
+    "@nuxtjs/toast": "^3.3.1",
+    "@pinia/nuxt": "^0.5.1",
+    "@prisma/client": "^5.22.0",
+    "@stripe/stripe-js": "^7.3.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/nodemailer": "^6.4.17",
+    "@vueuse/nuxt": "^10.9.0",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^2.4.3",
+    "chart.js": "^4.4.9",
+    "cloudinary": "^2.6.1",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^7.0.3",
+    "nuxt": "^3.10.3",
+    "pinia": "^2.1.7",
+    "stripe": "^18.1.1",
+    "vue": "^3.4.19",
+    "vue-chartjs": "^5.3.2",
+    "vue-router": "^4.3.0",
+    "vue-toastification": "^2.0.0-rc.5"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "latest",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^20.17.48",
+    "prisma": "^5.22.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
+    "vue-tsc": "^2.2.10"
+  }
+}
